@@ -10,7 +10,7 @@
 
 :root {
   /* Animation speed */
-  --tabbar-transition: width .12s ease-out, max-width .12s ease-out;
+  --tabbar-transition: max-width .12s ease-out;
 
   /* Delay before expanding — prevents accidental triggers when
      sweeping the mouse across from an adjacent monitor. */
@@ -52,49 +52,29 @@
 /* ===== Collapsed State: favicon-only ===== */
 
 /* Constrain the tab bar wrapper to collapsed width.
-   The transition here governs the COLLAPSE (mouse-leave): instant, no delay. */
+   overflow:hidden clips tab titles — no separate text transition needed.
+   will-change hints the compositor to promote this layer. */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper {
   max-width: var(--tabbar-collapsed-width) !important;
   overflow: hidden !important;
   transition: var(--tabbar-transition) !important;
   transition-delay: var(--tabbar-collapse-delay) !important;
+  will-change: max-width;
   z-index: 1;
-}
-
-/* Hide tab titles, show only favicons */
-#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .title,
-#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .close {
-  opacity: 0;
-  transition: opacity .12s ease-out !important;
-  transition-delay: var(--tabbar-collapse-delay) !important;
 }
 
 /* ===== Expanded State: full width on hover ===== */
 
-/* The transition here governs the EXPAND (mouse-enter): delayed so
-   fast mouse sweeps across the strip don't accidentally trigger it. */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover {
   max-width: var(--tabbar-expanded-width) !important;
   transition: var(--tabbar-transition) !important;
   transition-delay: var(--tabbar-expand-delay) !important;
 }
 
-#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .title,
-#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .close {
-  opacity: 1;
-  transition: opacity .08s ease-out !important;
-  transition-delay: calc(var(--tabbar-expand-delay) + .06s) !important;
-}
-
 /* ===== Show when dragging tabs ===== */
 
 #browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper {
   max-width: var(--tabbar-expanded-width) !important;
-}
-
-#browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper .tab-header .title,
-#browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper .tab-header .close {
-  opacity: 1;
 }
 
 /* ===== Workspace Popup Handling ===== */
@@ -111,15 +91,4 @@
 #browser:is(.tabs-left, .tabs-right):has(input[placeholder*="workspace"]) .tabbar-wrapper {
   max-width: var(--tabbar-expanded-width) !important;
   transition: none !important;
-}
-
-#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
-.workspace-popup:visible) .tabbar-wrapper .tab-header .title,
-#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
-.workspace-popup:visible) .tabbar-wrapper .tab-header .close,
-#browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper .tab-header .title,
-#browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper .tab-header .close,
-#browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper .tab-header .title,
-#browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper .tab-header .close {
-  opacity: 1 !important;
 }
