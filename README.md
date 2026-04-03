@@ -2,10 +2,6 @@
 
 **Auto-collapsing vertical tabs for [Vivaldi](https://vivaldi.com).** Your tab bar collapses to favicon-only when you're not using it and expands on hover — giving you more screen real estate without losing quick tab access.
 
-![Collapsed tab bar showing favicon-only strip](screenshots/collapsed.png)
-
-*Collapsed state: only favicons visible. Hover the strip to expand to full tab titles.*
-
 ## What it does
 
 - Vertical tab bar collapses to a ~34px favicon-only strip when not in use
@@ -80,6 +76,8 @@ Edit `css/custom.css` and tweak the variables at the top:
 | Variable | What it controls | Default |
 |----------|-----------------|---------|
 | `--tabbar-transition` | Expand/collapse animation speed and easing | `0.12s ease-out` |
+| `--tabbar-expand-delay` | Delay before expanding (prevents accidental triggers from mouse sweeps) | `0.15s` |
+| `--tabbar-collapse-delay` | Delay before collapsing (prevents flicker on brief mouse-outs) | `0.1s` |
 | `--tabbar-collapsed-width` | Width of the favicon-only strip | `34px` |
 | `--tabbar-expanded-width` | Full tab bar width (match your Vivaldi setting) | `292px` |
 | `--scrollbar-width` | Tab list scrollbar width | `10px` |

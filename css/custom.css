@@ -12,6 +12,14 @@
   /* Animation speed */
   --tabbar-transition: width .12s ease-out, max-width .12s ease-out;
 
+  /* Delay before expanding — prevents accidental triggers when
+     sweeping the mouse across from an adjacent monitor. */
+  --tabbar-expand-delay: .15s;
+
+  /* Slight delay before collapsing — avoids flicker if the mouse
+     briefly leaves the strip */
+  --tabbar-collapse-delay: .1s;
+
   /* Width when collapsed (favicon + padding) */
   --tabbar-collapsed-width: 34px;
 
@@ -43,11 +51,13 @@
 
 /* ===== Collapsed State: favicon-only ===== */
 
-/* Constrain the tab bar wrapper to collapsed width */
+/* Constrain the tab bar wrapper to collapsed width.
+   The transition here governs the COLLAPSE (mouse-leave): instant, no delay. */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper {
   max-width: var(--tabbar-collapsed-width) !important;
   overflow: hidden !important;
   transition: var(--tabbar-transition) !important;
+  transition-delay: var(--tabbar-collapse-delay) !important;
   z-index: 1;
 }
 
@@ -56,19 +66,24 @@
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .close {
   opacity: 0;
   transition: opacity .12s ease-out !important;
+  transition-delay: var(--tabbar-collapse-delay) !important;
 }
 
 /* ===== Expanded State: full width on hover ===== */
 
+/* The transition here governs the EXPAND (mouse-enter): delayed so
+   fast mouse sweeps across the strip don't accidentally trigger it. */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover {
   max-width: var(--tabbar-expanded-width) !important;
   transition: var(--tabbar-transition) !important;
+  transition-delay: var(--tabbar-expand-delay) !important;
 }
 
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .title,
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .close {
   opacity: 1;
-  transition: opacity .08s ease-out .06s !important;
+  transition: opacity .08s ease-out !important;
+  transition-delay: calc(var(--tabbar-expand-delay) + .06s) !important;
 }
 
 /* ===== Show when dragging tabs ===== */
