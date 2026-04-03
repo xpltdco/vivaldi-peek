@@ -63,6 +63,15 @@
   z-index: 1;
 }
 
+/* Hide tab titles when collapsed so no text peeks through */
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .title {
+  visibility: hidden;
+}
+
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .title {
+  visibility: visible;
+}
+
 /* ===== Expanded State: full width on hover ===== */
 
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover {
