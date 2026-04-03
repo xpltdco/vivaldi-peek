@@ -1,14 +1,16 @@
 # vivaldi-peek
 
-**Auto-collapsing vertical tabs for [Vivaldi](https://vivaldi.com).** Your tab bar hides when you're not using it and peeks back on hover — giving you a full-width browsing experience without losing quick tab access.
+**Auto-collapsing vertical tabs for [Vivaldi](https://vivaldi.com).** Your tab bar collapses to favicon-only when you're not using it and expands on hover — giving you more screen real estate without losing quick tab access.
 
-![peek-demo](https://github.com/user-attachments/assets/placeholder-replace-with-actual-gif)
+![Collapsed tab bar showing favicon-only strip](screenshots/collapsed.png)
+
+*Collapsed state: only favicons visible. Hover the strip to expand to full tab titles.*
 
 ## What it does
 
-- Vertical tab bar slides off-screen when not in use, leaving a tiny 3px hover strip
-- Hover near the edge to smoothly slide it back in (0.2s animation)
-- Stays visible during tab drags and workspace popups
+- Vertical tab bar collapses to a ~34px favicon-only strip when not in use
+- Hover the strip to smoothly expand to full width (0.12s animation)
+- Stays expanded during tab drags and workspace popups
 - Works with tabs on left **or** right side
 - Compatible with Vivaldi workspaces
 
@@ -37,7 +39,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-> **Note (macOS/Linux):** Requires [`jq`](https://jqlang.github.io/jq/) — install with `brew install jq` or `sudo apt install jq`.
+> **Note (macOS/Linux):** Requires [`jq`](https://jqlang.org/) — install with `brew install jq` or `sudo apt install jq`.
 
 Then open Vivaldi. That's it.
 
@@ -58,37 +60,28 @@ If you haven't already, set your tab bar to vertical:
 2. Go to **Tabs** > **Tab Bar Position**
 3. Select **Left** or **Right**
 
-<details>
-<summary>Screenshot: Tab Bar Position setting</summary>
-
-```
-Settings > Tabs > Tab Bar Position
-  ○ Top
-  ● Left    ← select this
-  ○ Right
-  ○ Bottom
-```
-
-</details>
-
 ## Customization
 
 Edit `css/custom.css` and tweak the variables at the top:
 
 ```css
 :root {
-  /* How fast the tab bar slides in/out */
-  --tabbar-transition: transform .2s ease-out, opacity .2s ease-out;
+  /* Animation speed */
+  --tabbar-transition: width .12s ease-out, max-width .12s ease-out;
 
-  /* Thin strip visible when tabs are hidden (hover target) */
-  --tabbar-peek-width: 3px;
+  /* Width when collapsed (favicon + padding) */
+  --tabbar-collapsed-width: 34px;
+
+  /* Width when expanded — match your Vivaldi tab bar width setting */
+  --tabbar-expanded-width: 292px;
 }
 ```
 
 | Variable | What it controls | Default |
 |----------|-----------------|---------|
-| `--tabbar-transition` | Slide animation speed and easing | `0.2s ease-out` |
-| `--tabbar-peek-width` | Width of the visible hover strip (px) | `3px` |
+| `--tabbar-transition` | Expand/collapse animation speed and easing | `0.12s ease-out` |
+| `--tabbar-collapsed-width` | Width of the favicon-only strip | `34px` |
+| `--tabbar-expanded-width` | Full tab bar width (match your Vivaldi setting) | `292px` |
 | `--scrollbar-width` | Tab list scrollbar width | `10px` |
 
 After editing, re-run the installer to deploy the updated CSS, then restart Vivaldi.
@@ -116,28 +109,28 @@ Vivaldi's UI is built with web technologies (HTML/CSS/JS). Since version ~2.9, V
 1. `vivaldi://experiments` has a flag called **"Allow CSS modifications"** — we enable this via `vivaldi.features.css_mods = true` in Preferences
 2. `vivaldi://settings/appearance/` has a **Custom UI Modifications** folder picker — we set this via `vivaldi.appearance.css_ui_mods_directory` in Preferences
 3. Vivaldi loads all `*.css` files from that folder and injects them into the browser UI
-4. Our CSS uses `position: absolute` + `transform: translateX(...)` to slide the `.tabbar-wrapper` off-screen, with `:hover` rules to bring it back
+4. Our CSS constrains `.tabbar-wrapper` to `--tabbar-collapsed-width` via `max-width` and `overflow: hidden`, hiding tab titles but keeping favicons visible. On `:hover`, it expands to `--tabbar-expanded-width`
 
 Because the CSS folder and Preferences live in **User Data** (not the versioned Application folder), nothing is overwritten during updates.
 
 ## Troubleshooting
 
-**Tabs aren't hiding after install**
+**Tabs aren't collapsing after install**
 - Make sure Vivaldi was fully closed before running the installer
 - Verify your tabs are set to Left or Right position (not Top/Bottom)
-- Try restarting Vivaldi
+- Try restarting Vivaldi (or press `Ctrl+Shift+F5` to reload the UI)
 
 **Want to verify it's working**
 - Open `vivaldi://experiments` — "Allow CSS modifications" should be checked
 - Open `vivaldi://settings/appearance/` — "Custom UI Modifications" should show the CSS folder path
 
-**CSS changes aren't showing up**
-- Re-run the installer after editing CSS to copy the updated files
-- Restart Vivaldi (or press `Ctrl+Shift+F5` to reload the UI without restarting)
+**Tab bar width doesn't match after expanding**
+- Measure your tab bar width in Vivaldi Settings > Tabs > Tab Bar Width
+- Update `--tabbar-expanded-width` in `css/custom.css` to match
 
 ## Credits
 
-CSS based on [Felvesthe's Arc-like auto-hide gist](https://gist.github.com/Felvesthe/8a13560ed3135ab1fbec2b06a18402da) with modifications for robustness.
+CSS inspired by [Felvesthe's Arc-like auto-hide gist](https://gist.github.com/Felvesthe/8a13560ed3135ab1fbec2b06a18402da), reworked for favicon-only collapsed state.
 
 ## License
 

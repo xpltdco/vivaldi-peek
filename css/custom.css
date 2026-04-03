@@ -1,23 +1,26 @@
 /*
  * vivaldi-peek — Auto-collapsing vertical tabs for Vivaldi
  *
- * Tabs auto-hide when not hovered, leaving a thin strip on the edge.
- * Hover to slide them back in. Works with left or right tab positioning.
- * Compatible with workspaces.
+ * When collapsed: shows only tab favicons (~34px wide).
+ * On hover: smoothly expands to full tab bar width.
+ * Works with left or right tab positioning. Compatible with workspaces.
  *
  * Based on: https://gist.github.com/Felvesthe/8a13560ed3135ab1fbec2b06a18402da
  */
 
 :root {
-  /* How fast the tab bar slides in/out */
-  --tabbar-transition: transform .2s ease-out, opacity .2s ease-out;
+  /* Animation speed */
+  --tabbar-transition: width .12s ease-out, max-width .12s ease-out;
+
+  /* Width when collapsed (favicon + padding) */
+  --tabbar-collapsed-width: 34px;
+
+  /* Width when expanded — match your Vivaldi tab bar width setting */
+  --tabbar-expanded-width: 292px;
 
   /* Scrollbar styling */
   --scrollbar-width: 10px;
   --scrollbar-border-color: #9fb0cb;
-
-  /* Thin strip visible when tabs are hidden (hover target) */
-  --tabbar-peek-width: 3px;
 }
 
 /* ===== Scrollbar Styling ===== */
@@ -38,42 +41,44 @@
   border-radius: 8px !important;
 }
 
-/* ===== Auto-Hide Behavior ===== */
+/* ===== Collapsed State: favicon-only ===== */
 
-/* Default: slide tab bar off-screen, leaving a thin peek strip */
+/* Constrain the tab bar wrapper to collapsed width */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper {
-  position: absolute;
-  transform: translateX(calc(-100% + var(--tabbar-peek-width)));
+  max-width: var(--tabbar-collapsed-width) !important;
+  overflow: hidden !important;
   transition: var(--tabbar-transition) !important;
-  opacity: 0;
   z-index: 1;
 }
 
-/* Mirror for right-side tabs */
-#browser.tabs-right .tabbar-wrapper {
-  right: 0;
-  transform: translateX(calc(100% - var(--tabbar-peek-width)));
+/* Hide tab titles, show only favicons */
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .title,
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .close {
+  opacity: 0;
+  transition: opacity .12s ease-out !important;
 }
 
-/* Show on hover */
+/* ===== Expanded State: full width on hover ===== */
+
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover {
-  transform: translateX(0);
+  max-width: var(--tabbar-expanded-width) !important;
   transition: var(--tabbar-transition) !important;
-  opacity: 1;
 }
 
-/* Show when dragging tabs or interacting while blurred */
-#browser.tabs-left.isblurred:where(:has(div.tab-yield-space, .tab-acceptsdrop)) .tabbar-wrapper,
-#browser.tabs-left.isblurred:is(:active, :focus) .tabbar-wrapper:is(:active, :focus) {
-  transform: translateX(0);
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .title,
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .close {
   opacity: 1;
+  transition: opacity .08s ease-out .06s !important;
 }
 
-/* Show when hovering adjacent areas */
-#browser:is(.tabs-left) .mainbar:hover + .tabbar-wrapper,
-#browser:is(.tabs-right) .webpage:hover + .tabbar-wrapper {
-  transform: translateX(0);
-  transition: var(--tabbar-transition) !important;
+/* ===== Show when dragging tabs ===== */
+
+#browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper {
+  max-width: var(--tabbar-expanded-width) !important;
+}
+
+#browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper .tab-header .title,
+#browser:is(.tabs-left, .tabs-right):has(.tab-acceptsdrop, .tab-yield-space) .tabbar-wrapper .tab-header .close {
   opacity: 1;
 }
 
@@ -81,52 +86,25 @@
 
 #browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
 .workspace-popup:visible) .tabbar-wrapper {
-  transform: translateX(0);
+  max-width: var(--tabbar-expanded-width) !important;
   transition: var(--tabbar-transition) !important;
-  opacity: 1;
 }
 
 #browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper,
 #browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper,
 #browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup) .tabbar-wrapper,
 #browser:is(.tabs-left, .tabs-right):has(input[placeholder*="workspace"]) .tabbar-wrapper {
-  transform: translateX(0) !important;
+  max-width: var(--tabbar-expanded-width) !important;
   transition: none !important;
+}
+
+#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
+.workspace-popup:visible) .tabbar-wrapper .tab-header .title,
+#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
+.workspace-popup:visible) .tabbar-wrapper .tab-header .close,
+#browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper .tab-header .title,
+#browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper .tab-header .close,
+#browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper .tab-header .title,
+#browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper .tab-header .close {
   opacity: 1 !important;
-}
-
-/* ===== Force-hide when clicking away ===== */
-
-html:active:not(:has(.tabbar-wrapper:hover,
-.quick-command-container.workspace-naming,
-.workspace-naming,
-input[placeholder="workspace"]:focus,
-.WorkspacePopup:visible,
-.workspace-popup:visible)) .tabbar-wrapper {
-  transform: translateX(calc(-100% + var(--tabbar-peek-width))) !important;
-  transition: var(--tabbar-transition) !important;
-  opacity: 0 !important;
-}
-
-html:active:not(:has(.tabbar-wrapper:hover,
-.quick-command-container.workspace-naming,
-.workspace-naming,
-input[placeholder="workspace"]:focus,
-.WorkspacePopup:visible,
-.workspace-popup:visible)) #browser.tabs-right .tabbar-wrapper {
-  transform: translateX(calc(100% - var(--tabbar-peek-width))) !important;
-}
-
-html:active:active .tabbar-wrapper:not(:hover):not(:has(.quick-command-container.workspace-naming,
-.workspace-naming,
-input[placeholder="workspace"]:focus)) {
-  transform: translateX(calc(-100% + var(--tabbar-peek-width))) !important;
-  opacity: 0 !important;
-}
-
-html:active:active #browser.tabs-right .tabbar-wrapper:not(:hover):not(:has(.quick-command-container.workspace-naming,
-.workspace-naming,
-input[placeholder="workspace"]:focus)) {
-  transform: translateX(calc(100% - var(--tabbar-peek-width))) !important;
-  opacity: 0 !important;
 }
