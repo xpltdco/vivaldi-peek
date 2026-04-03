@@ -18,7 +18,7 @@
 
   /* Slight delay before collapsing — avoids flicker if the mouse
      briefly leaves the strip */
-  --tabbar-collapse-delay: .1s;
+  --tabbar-collapse-delay: .15s;
 
   /* Width when collapsed (favicon + padding) */
   --tabbar-collapsed-width: 34px;

@@ -77,7 +77,7 @@ Edit `css/custom.css` and tweak the variables at the top:
 |----------|-----------------|---------|
 | `--tabbar-transition` | Expand/collapse animation speed and easing | `0.12s ease-out` |
 | `--tabbar-expand-delay` | Delay before expanding (prevents accidental triggers from mouse sweeps) | `0.15s` |
-| `--tabbar-collapse-delay` | Delay before collapsing (prevents flicker on brief mouse-outs) | `0.1s` |
+| `--tabbar-collapse-delay` | Delay before collapsing (prevents flicker on brief mouse-outs) | `0.15s` |
 | `--tabbar-collapsed-width` | Width of the favicon-only strip | `34px` |
 | `--tabbar-expanded-width` | Full tab bar width (match your Vivaldi setting) | `292px` |
 | `--scrollbar-width` | Tab list scrollbar width | `10px` |
