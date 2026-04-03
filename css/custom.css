@@ -1,0 +1,132 @@
+/*
+ * vivaldi-peek — Auto-collapsing vertical tabs for Vivaldi
+ *
+ * Tabs auto-hide when not hovered, leaving a thin strip on the edge.
+ * Hover to slide them back in. Works with left or right tab positioning.
+ * Compatible with workspaces.
+ *
+ * Based on: https://gist.github.com/Felvesthe/8a13560ed3135ab1fbec2b06a18402da
+ */
+
+:root {
+  /* How fast the tab bar slides in/out */
+  --tabbar-transition: transform .2s ease-out, opacity .2s ease-out;
+
+  /* Scrollbar styling */
+  --scrollbar-width: 10px;
+  --scrollbar-border-color: #9fb0cb;
+
+  /* Thin strip visible when tabs are hidden (hover target) */
+  --tabbar-peek-width: 3px;
+}
+
+/* ===== Scrollbar Styling ===== */
+
+#tabs-tabbar-container:is(.left, .right) .tab-strip::-webkit-scrollbar {
+  padding: 0 2px !important;
+  width: var(--scrollbar-width) !important;
+  border: 1px solid var(--scrollbar-border-color) !important;
+  border-radius: 8px !important;
+}
+
+#tabs-tabbar-container:is(.left, .right) .tab-strip::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+#tabs-tabbar-container:is(.left, .right) .tab-strip::-webkit-scrollbar-thumb {
+  border: 2px solid transparent !important;
+  border-radius: 8px !important;
+}
+
+/* ===== Auto-Hide Behavior ===== */
+
+/* Default: slide tab bar off-screen, leaving a thin peek strip */
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper {
+  position: absolute;
+  transform: translateX(calc(-100% + var(--tabbar-peek-width)));
+  transition: var(--tabbar-transition) !important;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Mirror for right-side tabs */
+#browser.tabs-right .tabbar-wrapper {
+  right: 0;
+  transform: translateX(calc(100% - var(--tabbar-peek-width)));
+}
+
+/* Show on hover */
+#browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover {
+  transform: translateX(0);
+  transition: var(--tabbar-transition) !important;
+  opacity: 1;
+}
+
+/* Show when dragging tabs or interacting while blurred */
+#browser.tabs-left.isblurred:where(:has(div.tab-yield-space, .tab-acceptsdrop)) .tabbar-wrapper,
+#browser.tabs-left.isblurred:is(:active, :focus) .tabbar-wrapper:is(:active, :focus) {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Show when hovering adjacent areas */
+#browser:is(.tabs-left) .mainbar:hover + .tabbar-wrapper,
+#browser:is(.tabs-right) .webpage:hover + .tabbar-wrapper {
+  transform: translateX(0);
+  transition: var(--tabbar-transition) !important;
+  opacity: 1;
+}
+
+/* ===== Workspace Popup Handling ===== */
+
+#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup:visible,
+.workspace-popup:visible) .tabbar-wrapper {
+  transform: translateX(0);
+  transition: var(--tabbar-transition) !important;
+  opacity: 1;
+}
+
+#browser:is(.tabs-left, .tabs-right):has(.quick-command-container.workspace-naming) .tabbar-wrapper,
+#browser:is(.tabs-left, .tabs-right):has(.workspace-naming) .tabbar-wrapper,
+#browser:is(.tabs-left, .tabs-right):has(.WorkspacePopup) .tabbar-wrapper,
+#browser:is(.tabs-left, .tabs-right):has(input[placeholder*="workspace"]) .tabbar-wrapper {
+  transform: translateX(0) !important;
+  transition: none !important;
+  opacity: 1 !important;
+}
+
+/* ===== Force-hide when clicking away ===== */
+
+html:active:not(:has(.tabbar-wrapper:hover,
+.quick-command-container.workspace-naming,
+.workspace-naming,
+input[placeholder="workspace"]:focus,
+.WorkspacePopup:visible,
+.workspace-popup:visible)) .tabbar-wrapper {
+  transform: translateX(calc(-100% + var(--tabbar-peek-width))) !important;
+  transition: var(--tabbar-transition) !important;
+  opacity: 0 !important;
+}
+
+html:active:not(:has(.tabbar-wrapper:hover,
+.quick-command-container.workspace-naming,
+.workspace-naming,
+input[placeholder="workspace"]:focus,
+.WorkspacePopup:visible,
+.workspace-popup:visible)) #browser.tabs-right .tabbar-wrapper {
+  transform: translateX(calc(100% - var(--tabbar-peek-width))) !important;
+}
+
+html:active:active .tabbar-wrapper:not(:hover):not(:has(.quick-command-container.workspace-naming,
+.workspace-naming,
+input[placeholder="workspace"]:focus)) {
+  transform: translateX(calc(-100% + var(--tabbar-peek-width))) !important;
+  opacity: 0 !important;
+}
+
+html:active:active #browser.tabs-right .tabbar-wrapper:not(:hover):not(:has(.quick-command-container.workspace-naming,
+.workspace-naming,
+input[placeholder="workspace"]:focus)) {
+  transform: translateX(calc(100% - var(--tabbar-peek-width))) !important;
+  opacity: 0 !important;
+}
