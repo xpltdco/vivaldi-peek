@@ -66,10 +66,13 @@
 /* Hide tab titles when collapsed so no text peeks through */
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper .tab-header .title {
   visibility: hidden;
+  transition: visibility 0s !important;
+  transition-delay: var(--tabbar-collapse-delay) !important;
 }
 
 #browser:is(.tabs-left, .tabs-right) .tabbar-wrapper:hover .tab-header .title {
   visibility: visible;
+  transition-delay: var(--tabbar-expand-delay) !important;
 }
 
 /* ===== Expanded State: full width on hover ===== */
